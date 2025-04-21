@@ -1,0 +1,197 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 351 83% 57%; /* C TECH Red */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 351 83% 57%;
+
+    --radius: 0.5rem;
+    
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-primary: 351 83% 57%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-ring: 351 83% 57%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 351 83% 57%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-primary: 351 83% 57%;
+    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-ring: 351 83% 57%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Formula One style font */
+  .formula1 {
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+  }
+}
+
+@layer components {
+  .stat-card {
+    @apply bg-white rounded-lg shadow-sm p-4 transition-all hover:shadow-md;
+  }
+  
+  .trend-up {
+    @apply text-success flex items-center;
+  }
+  
+  .trend-down {
+    @apply text-destructive flex items-center;
+  }
+  
+  .status-pill {
+    @apply text-xs font-medium px-2.5 py-0.5 rounded-full;
+  }
+  
+  .status-in-stock {
+    @apply bg-green-100 text-success;
+  }
+  
+  .status-low-stock {
+    @apply bg-yellow-100 text-warning;
+  }
+  
+  .status-out-of-stock {
+    @apply bg-red-100 text-destructive;
+  }
+  
+  .status-completed {
+    @apply bg-green-100 text-success;
+  }
+  
+  .status-processing {
+    @apply bg-blue-100 text-primary;
+  }
+  
+  .status-pending {
+    @apply bg-yellow-100 text-warning;
+  }
+  
+  .status-cancelled {
+    @apply bg-red-100 text-destructive;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-1;
+  }
+  
+  /* New styles for modern UI */
+  .section-heading {
+    @apply text-2xl font-bold mb-6 tracking-tight;
+  }
+  
+  .badge-red {
+    @apply bg-c-tech-red/10 text-c-tech-red px-2 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .smooth-shadow {
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.15);
+  }
+  
+  .hero-section {
+    @apply bg-gradient-to-tr from-gray-50 to-white py-16 px-4 sm:px-8 rounded-2xl;
+  }
+  
+  .feature-card {
+    @apply bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all border border-gray-100;
+  }
+  
+  .btn-cta {
+    @apply bg-c-tech-red hover:bg-c-tech-red/90 text-white font-medium px-6 py-3 rounded-md transition-all shadow-sm hover:shadow;
+  }
+  
+  .section-separator {
+    @apply my-16 border-t border-gray-100;
+  }
+}

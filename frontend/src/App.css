@@ -1,0 +1,150 @@
+
+#root {
+  max-width: 1440px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* Remove padding that was causing layout issues */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Titillium Web', sans-serif;
+}
+
+/* Custom button styles */
+.btn-cta {
+  background-color: #ea384c;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-cta:hover {
+  background-color: #d22c3f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Slide in animation */
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Modern inputs */
+input.modern-input {
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+input.modern-input:focus {
+  border-color: #ea384c;
+  box-shadow: 0 0 0 3px rgba(234, 56, 76, 0.15);
+  outline: none;
+}
+
+/* Section styling */
+.section-container {
+  padding: 2rem 0;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-badge-success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Table improvements */
+.table-container {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container th {
+  background-color: #f9fafb;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.table-container td {
+  border-top: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+
+/* Card improvements */
+.dashboard-card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
