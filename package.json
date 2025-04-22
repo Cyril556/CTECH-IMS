@@ -1,0 +1,17 @@
+{
+  "name": "c-tech-ims",
+  "version": "1.0.0",
+  "description": "C TECH Inventory Management System",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm run preview"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
