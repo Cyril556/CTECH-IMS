@@ -13,6 +13,7 @@ import SupplierCatalog from "./components/suppliers/SupplierCatalog";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import ApiTest from "./pages/ApiTest";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +28,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return <>{children}</>;
 };
 
@@ -37,11 +38,11 @@ const App = () => {
   // Check authentication status on mount and when localStorage changes
   useEffect(() => {
     setIsLoggedIn(isAuthenticated());
-    
+
     const handleStorageChange = () => {
       setIsLoggedIn(isAuthenticated());
     };
-    
+
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
@@ -67,6 +68,7 @@ const App = () => {
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="suppliers/:supplierId" element={<SupplierCatalog />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="api-test" element={<ApiTest />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,20 +1,21 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Package, 
-  ShoppingCart, 
-  Users, 
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
   BarChart3,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ServerCog
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { 
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger 
+  TooltipTrigger
 } from "@/components/ui/tooltip";
 
 interface SidebarProps {
@@ -24,17 +25,18 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
   const location = useLocation();
-  
+
   const navItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/" },
     { name: "Inventory", icon: Package, path: "/inventory" },
     { name: "Orders", icon: ShoppingCart, path: "/orders" },
     { name: "Suppliers", icon: Users, path: "/suppliers" },
     { name: "Reports", icon: BarChart3, path: "/reports" },
+    { name: "API Test", icon: ServerCog, path: "/api-test" },
   ];
 
   return (
-    <div 
+    <div
       className={cn(
         "bg-white shadow-md border-r border-gray-100 flex flex-col h-full transition-all duration-300 z-30",
         isOpen ? "w-64" : "w-20"
@@ -48,20 +50,20 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
             <h1 className="formula1 text-2xl font-bold text-c-tech-red">CT</h1>
           )}
         </Link>
-        <button 
-          onClick={toggleSidebar} 
+        <button
+          onClick={toggleSidebar}
           className={cn("text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100", !isOpen && "hidden")}
         >
           <ChevronLeft size={18} />
         </button>
-        <button 
-          onClick={toggleSidebar} 
+        <button
+          onClick={toggleSidebar}
           className={cn("text-gray-500 hover:text-gray-700 w-full flex justify-center p-1 rounded-full hover:bg-gray-100", isOpen && "hidden")}
         >
           <ChevronRight size={18} />
         </button>
       </div>
-      
+
       <nav className="flex-1 p-3">
         <ul className="space-y-1">
           {navItems.map((item) => (
@@ -71,8 +73,8 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
                   to={item.path}
                   className={cn(
                     "flex items-center p-2 rounded-lg transition-all",
-                    location.pathname === item.path 
-                      ? "bg-c-tech-red text-white shadow-sm" 
+                    location.pathname === item.path
+                      ? "bg-c-tech-red text-white shadow-sm"
                       : "text-gray-700 hover:bg-gray-100"
                   )}
                 >
@@ -87,8 +89,8 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
                         to={item.path}
                         className={cn(
                           "flex items-center justify-center p-2 rounded-lg transition-all",
-                          location.pathname === item.path 
-                            ? "bg-c-tech-red text-white shadow-sm" 
+                          location.pathname === item.path
+                            ? "bg-c-tech-red text-white shadow-sm"
                             : "text-gray-700 hover:bg-gray-100"
                         )}
                       >
