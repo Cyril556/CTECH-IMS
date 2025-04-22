@@ -13,7 +13,6 @@ import SupplierCatalog from "./components/suppliers/SupplierCatalog";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
-import ApiTest from "./pages/ApiTest";
 
 const queryClient = new QueryClient();
 
@@ -68,7 +67,6 @@ const App = () => {
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="suppliers/:supplierId" element={<SupplierCatalog />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="api-test" element={<ApiTest />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

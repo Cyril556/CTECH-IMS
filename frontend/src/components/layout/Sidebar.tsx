@@ -7,8 +7,7 @@ import {
   Users,
   BarChart3,
   ChevronLeft,
-  ChevronRight,
-  ServerCog
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -32,7 +31,6 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
     { name: "Orders", icon: ShoppingCart, path: "/orders" },
     { name: "Suppliers", icon: Users, path: "/suppliers" },
     { name: "Reports", icon: BarChart3, path: "/reports" },
-    { name: "API Test", icon: ServerCog, path: "/api-test" },
   ];
 
   return (
