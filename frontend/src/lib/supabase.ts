@@ -13,12 +13,12 @@ export const fetchInventoryItems = async () => {
       categories:category_id(id, name),
       suppliers:supplier_id(id, name)
     `);
-  
+
   if (error) {
     console.error('Error fetching inventory items:', error);
     throw error;
   }
-  
+
   return data || [];
 };
 
@@ -27,13 +27,27 @@ export const deleteInventoryItem = async (id: string) => {
     .from('inventory_items')
     .delete()
     .eq('id', id);
-  
+
   if (error) {
     console.error('Error deleting inventory item:', error);
     throw error;
   }
-  
+
   return true;
+};
+
+// Categories API functions
+export const fetchCategories = async () => {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*');
+
+  if (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+
+  return data || [];
 };
 
 // Suppliers API functions
@@ -41,12 +55,12 @@ export const fetchSuppliers = async () => {
   const { data, error } = await supabase
     .from('suppliers')
     .select('*');
-  
+
   if (error) {
     console.error('Error fetching suppliers:', error);
     throw error;
   }
-  
+
   return data || [];
 };
 
@@ -55,30 +69,30 @@ export const deleteSupplier = async (id: string) => {
     .from('suppliers')
     .delete()
     .eq('id', id);
-  
+
   if (error) {
     console.error('Error deleting supplier:', error);
     throw error;
   }
-  
+
   return true;
 };
 
 // Supplier Products API functions
 export const fetchSupplierProducts = async (supplierId?: string) => {
   let query = supabase.from('supplier_products').select('*');
-  
+
   if (supplierId) {
     query = query.eq('supplier_id', supplierId);
   }
-  
+
   const { data, error } = await query;
-  
+
   if (error) {
     console.error('Error fetching supplier products:', error);
     throw error;
   }
-  
+
   return data || [];
 };
 
@@ -91,12 +105,12 @@ export const fetchOrders = async () => {
       *,
       suppliers:supplier_id(id, name)
     `);
-  
+
   if (error) {
     console.error('Error fetching orders:', error);
     throw error;
   }
-  
+
   return data || [];
 };
 
@@ -105,12 +119,12 @@ export const updateOrderStatus = async (id: string, status: string) => {
     .from('orders')
     .update({ status })
     .eq('id', id);
-  
+
   if (error) {
     console.error('Error updating order status:', error);
     throw error;
   }
-  
+
   return true;
 };
 
@@ -150,15 +164,15 @@ export const fetchInventoryByCategory = async () => {
       *,
       categories:category_id(id, name)
     `);
-  
+
   if (error) {
     console.error('Error fetching inventory distribution:', error);
     throw error;
   }
-  
+
   // Process data for chart display
   const categoryTotals: Record<string, number> = {};
-  
+
   data?.forEach(item => {
     const categoryName = item.categories?.name || 'Uncategorized';
     if (!categoryTotals[categoryName]) {
@@ -166,12 +180,12 @@ export const fetchInventoryByCategory = async () => {
     }
     categoryTotals[categoryName]++;
   });
-  
+
   const processedData = Object.entries(categoryTotals).map(([name, value]) => ({
     name,
     value
   }));
-  
+
   return processedData || [];
 };
 
@@ -179,16 +193,16 @@ export const fetchInventorySummary = async () => {
   const { data, error } = await supabase
     .from('inventory_items')
     .select('*');
-  
+
   if (error) {
     console.error('Error fetching inventory summary:', error);
     throw error;
   }
-  
+
   const totalItems = data.length;
   const lowStockItems = data.filter(item => item.stock > 0 && item.stock <= 10).length;
   const outOfStockItems = data.filter(item => item.stock <= 0).length;
-  
+
   return {
     totalItems,
     lowStockItems,
@@ -202,12 +216,12 @@ export const fetchSupplierPerformance = async () => {
     .select('*')
     .eq('status', 'Active')
     .limit(3);
-  
+
   if (suppliersError) {
     console.error('Error fetching suppliers:', suppliersError);
     throw suppliersError;
   }
-  
+
   // Generate mock performance data since we don't have real metrics yet
   // In a real app, this would come from actual supplier performance data
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
@@ -219,7 +233,7 @@ export const fetchSupplierPerformance = async () => {
     });
     return dataPoint;
   });
-  
+
   return {
     suppliers,
     performanceData: mockPerformanceData

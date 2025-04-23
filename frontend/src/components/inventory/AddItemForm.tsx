@@ -12,10 +12,13 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { AddItemFormProps } from "./AddItemFormProps";
-import { fetchSuppliers, fetchSupplierProducts, supabase } from "@/lib/supabase";
+import { fetchSuppliers, fetchSupplierProducts, fetchCategories, supabase } from "@/lib/supabase";
 import { Tables } from "@/types/Database.types";
 
-const categories = ["Electronics", "Accessories", "Audio", "Storage", "Other"];
+interface Category {
+  id: string;
+  name: string;
+}
 
 interface Supplier {
   id: string;
@@ -42,22 +45,33 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
     product_id: "",
   });
 
+  const [categories, setCategories] = useState<Category[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [supplierProducts, setSupplierProducts] = useState<SupplierProduct[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<SupplierProduct | null>(null);
 
   useEffect(() => {
-    const loadSuppliers = async () => {
+    const loadData = async () => {
       try {
-        const data = await fetchSuppliers();
-        setSuppliers(data);
+        // Load categories
+        const categoriesData = await fetchCategories();
+        setCategories(categoriesData);
+
+        // Load suppliers
+        const suppliersData = await fetchSuppliers();
+        setSuppliers(suppliersData);
       } catch (error) {
-        console.error("Error fetching suppliers:", error);
+        console.error("Error fetching initial data:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load form data. Please try again.",
+        });
       }
     };
-    
-    loadSuppliers();
-  }, []);
+
+    loadData();
+  }, [toast]);
 
   useEffect(() => {
     const loadSupplierProducts = async () => {
@@ -72,7 +86,7 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
         setSupplierProducts([]);
       }
     };
-    
+
     loadSupplierProducts();
   }, [formData.supplier_id]);
 
@@ -86,11 +100,11 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
   };
 
   const handleSupplierChange = (value: string) => {
-    setFormData((prev) => ({ 
-      ...prev, 
+    setFormData((prev) => ({
+      ...prev,
       supplier_id: value,
       // Reset product selection when supplier changes
-      product_id: "" 
+      product_id: ""
     }));
     setSelectedProduct(null);
   };
@@ -99,8 +113,8 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
     const product = supplierProducts.find(p => p.id === value);
     if (product) {
       setSelectedProduct(product);
-      setFormData((prev) => ({ 
-        ...prev, 
+      setFormData((prev) => ({
+        ...prev,
         product_id: value,
         name: product.product_name,
         price: String(product.price)
@@ -110,20 +124,20 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       // Create a new inventory item
       const itemToSave = {
         name: formData.name,
         sku: formData.sku,
-        category_id: formData.category, // This would need to be updated to use actual category ID
+        category_id: formData.category, // Using the category ID from the select
         stock: parseInt(formData.stock),
         price: parseFloat(formData.price),
         supplier_id: formData.supplier_id || null,
       };
 
       let savedItem;
-      
+
       if (editMode && itemData) {
         // Update existing item
         const { data, error } = await supabase
@@ -131,7 +145,7 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
           .update(itemToSave)
           .eq("id", itemData.id)
           .select();
-        
+
         if (error) throw error;
         savedItem = data?.[0];
       } else {
@@ -140,14 +154,14 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
           .from("inventory_items")
           .insert(itemToSave)
           .select();
-        
+
         if (error) throw error;
         savedItem = data?.[0];
-        
+
         // Create corresponding order if it's a new item
         if (savedItem) {
           const orderNumber = `ORD-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-          
+
           const { error: orderError } = await supabase
             .from("orders")
             .insert({
@@ -157,23 +171,23 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
               total_amount: parseFloat(formData.price),
               status: "Pending"
             });
-          
+
           if (orderError) {
             console.error("Error creating order:", orderError);
           }
         }
       }
-      
+
       toast({
         title: editMode ? "Item Updated" : "Item Added",
         description: `${formData.name} has been ${editMode ? "updated" : "added"} to inventory.`,
       });
-  
+
       // Call onSuccess callback if provided
       if (onSuccess) {
         onSuccess();
       }
-      
+
       // Reset form if not editing
       if (!editMode) {
         setFormData({
@@ -202,8 +216,8 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="supplier">Supplier</Label>
-          <Select 
-            value={formData.supplier_id} 
+          <Select
+            value={formData.supplier_id}
             onValueChange={handleSupplierChange}
           >
             <SelectTrigger id="supplier">
@@ -218,12 +232,12 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
             </SelectContent>
           </Select>
         </div>
-        
+
         {formData.supplier_id && (
           <div className="space-y-2">
             <Label htmlFor="product">Supplier Product</Label>
-            <Select 
-              value={formData.product_id} 
+            <Select
+              value={formData.product_id}
               onValueChange={handleProductChange}
             >
               <SelectTrigger id="product">
@@ -270,8 +284,8 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="category">Category</Label>
-          <Select 
-            value={formData.category} 
+          <Select
+            value={formData.category}
             onValueChange={handleCategoryChange}
             required
           >
@@ -280,8 +294,8 @@ const AddItemForm = ({ onSuccess, editMode = false, itemData }: AddItemFormProps
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
                 </SelectItem>
               ))}
             </SelectContent>
