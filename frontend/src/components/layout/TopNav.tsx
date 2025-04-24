@@ -191,14 +191,7 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
           )}
         </div>
 
-        <div className="hidden md:flex items-center relative max-w-md w-full mx-8">
-          <Search className="absolute left-3 h-4 w-4 text-gray-400" />
-          <Input
-            type="search"
-            placeholder="Search..."
-            className="pl-10 pr-4 h-9 border-gray-200 focus:border-c-tech-red focus:ring-c-tech-red/10"
-          />
-        </div>
+
 
         <div className="flex items-center gap-2">
           <DropdownMenu>

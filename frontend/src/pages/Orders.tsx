@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
-import { 
-  Search, 
-  Filter, 
-  ChevronLeft, 
+import {
+  Search,
+  Filter,
+  ChevronLeft,
   ChevronRight,
   CheckCircle,
   Clock,
@@ -76,7 +76,7 @@ const Orders = () => {
   const [suppliers, setSuppliers] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 5;
-  
+
   // State for order detail modal
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
@@ -96,13 +96,13 @@ const Orders = () => {
       try {
         const data = await fetchOrders();
         setOrders(data as Order[]);
-        
+
         // Extract unique suppliers
         const uniqueSuppliers = Array.from(
           new Set(data.map(order => order.suppliers?.name || "Unknown"))
         );
         setSuppliers(["All", ...uniqueSuppliers]);
-        
+
         setIsLoading(false);
       } catch (error) {
         console.error("Error loading orders:", error);
@@ -114,13 +114,13 @@ const Orders = () => {
         setIsLoading(false);
       }
     };
-    
+
     loadOrders();
   }, []);
 
   // Filter orders based on search query, status, and supplier
   const filteredOrders = orders.filter((order) => {
-    const matchesSearch = order.order_number.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = order.order_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (order.suppliers?.name || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = selectedStatus === "All" || order.status === selectedStatus;
     const matchesSupplier = selectedSupplier === "All" || order.suppliers?.name === selectedSupplier;
@@ -136,24 +136,24 @@ const Orders = () => {
   const getStatusInfo = (status: string) => {
     switch (status) {
       case "Completed":
-        return { 
-          class: "bg-green-100 text-green-800", 
-          icon: <CheckCircle className="h-4 w-4 mr-1 text-green-800" /> 
+        return {
+          class: "bg-green-100 text-green-800",
+          icon: <CheckCircle className="h-4 w-4 mr-1 text-green-800" />
         };
       case "Processing":
-        return { 
-          class: "bg-yellow-100 text-yellow-800", 
-          icon: <Clock className="h-4 w-4 mr-1 text-yellow-800" /> 
+        return {
+          class: "bg-yellow-100 text-yellow-800",
+          icon: <Clock className="h-4 w-4 mr-1 text-yellow-800" />
         };
       case "Pending":
-        return { 
-          class: "bg-blue-100 text-blue-800", 
-          icon: <AlertCircle className="h-4 w-4 mr-1 text-blue-800" /> 
+        return {
+          class: "bg-blue-100 text-blue-800",
+          icon: <AlertCircle className="h-4 w-4 mr-1 text-blue-800" />
         };
       case "Cancelled":
-        return { 
-          class: "bg-red-100 text-red-800", 
-          icon: <XCircle className="h-4 w-4 mr-1 text-red-800" /> 
+        return {
+          class: "bg-red-100 text-red-800",
+          icon: <XCircle className="h-4 w-4 mr-1 text-red-800" />
         };
       default:
         return { class: "", icon: null };
@@ -187,13 +187,13 @@ const Orders = () => {
   // Confirm action
   const confirmAction = async () => {
     if (!confirmActionDialog.orderId || !confirmActionDialog.action) return;
-    
+
     try {
       const newStatus = confirmActionDialog.action === 'complete' ? 'Completed' : 'Cancelled';
       await updateOrderStatus(confirmActionDialog.orderId, newStatus);
-      
+
       // Update local state
-      setOrders(prevOrders => 
+      setOrders(prevOrders =>
         prevOrders.map(order => {
           if (order.id === confirmActionDialog.orderId) {
             return {
@@ -204,7 +204,7 @@ const Orders = () => {
           return order;
         })
       );
-      
+
       toast({
         title: confirmActionDialog.action === 'complete' ? "Order Completed" : "Order Cancelled",
         description: `Order has been ${confirmActionDialog.action === 'complete' ? 'marked as completed' : 'cancelled'}.`
@@ -232,12 +232,12 @@ const Orders = () => {
       `$${order.total_amount.toFixed(2)}`,
       order.status
     ]);
-    
+
     const csvContent = [
       headers.join(","),
       ...rows.map(row => row.join(","))
     ].join("\n");
-    
+
     // Create download link
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -247,7 +247,7 @@ const Orders = () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    
+
     toast({
       title: "Export Complete",
       description: "Orders data has been exported to CSV.",
@@ -299,7 +299,20 @@ const Orders = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  // Reset filters
+                  setSelectedStatus("All");
+                  setSelectedSupplier("All");
+                  setSearchQuery("");
+                  toast({
+                    title: "Filters Reset",
+                    description: "All filters have been reset to default values."
+                  });
+                }}
+              >
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
@@ -425,7 +438,7 @@ const Orders = () => {
               Complete information about order {selectedOrder?.order_number}
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedOrder && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -459,14 +472,14 @@ const Orders = () => {
                   <p>${selectedOrder.total_amount.toFixed(2)}</p>
                 </div>
               </div>
-              
+
               <div className="pt-4">
                 <p className="text-sm font-medium text-muted-foreground mb-2">Order Actions</p>
                 <div className="flex gap-2">
                   {selectedOrder.status !== "Completed" && selectedOrder.status !== "Cancelled" && (
                     <>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => {
                           setShowOrderDetails(false);
                           handleMarkAsCompleted(selectedOrder.id);
@@ -475,8 +488,8 @@ const Orders = () => {
                         <CheckCircle className="mr-2 h-4 w-4" />
                         Mark as Completed
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => {
                           setShowOrderDetails(false);
                           handleCancelOrder(selectedOrder.id);
@@ -493,16 +506,16 @@ const Orders = () => {
           )}
         </DialogContent>
       </Dialog>
-      
+
       {/* Confirm Action Dialog */}
-      <Dialog open={confirmActionDialog.open} onOpenChange={(open) => 
+      <Dialog open={confirmActionDialog.open} onOpenChange={(open) =>
         setConfirmActionDialog(prev => ({ ...prev, open }))
       }>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {confirmActionDialog.action === 'complete' 
-                ? 'Mark Order as Completed' 
+              {confirmActionDialog.action === 'complete'
+                ? 'Mark Order as Completed'
                 : 'Cancel Order'
               }
             </DialogTitle>
@@ -514,12 +527,12 @@ const Orders = () => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex space-x-2 justify-end">
-            <Button variant="outline" onClick={() => 
+            <Button variant="outline" onClick={() =>
               setConfirmActionDialog({ open: false, action: null, orderId: null })
             }>
               Cancel
             </Button>
-            <Button 
+            <Button
               variant={confirmActionDialog.action === 'cancel' ? "destructive" : "default"}
               onClick={confirmAction}
             >

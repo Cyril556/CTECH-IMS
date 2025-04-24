@@ -1,25 +1,25 @@
 
 import React, { useState, useEffect } from "react";
-import { 
-  Search, 
-  Plus, 
-  Filter, 
-  ArrowUpDown, 
-  Download, 
-  Pencil, 
+import {
+  Search,
+  Plus,
+  Filter,
+  ArrowUpDown,
+  Download,
+  Pencil,
   Trash2,
   AlertTriangle,
   Package
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -98,19 +98,19 @@ const Inventory = () => {
         new Set(
           data
             .filter(item => item.categories)
-            .map(item => JSON.stringify({ 
-              id: item.categories?.id, 
-              name: item.categories?.name 
+            .map(item => JSON.stringify({
+              id: item.categories?.id,
+              name: item.categories?.name
             }))
         )
       ).map(str => JSON.parse(str));
-      
+
       setCategories(uniqueCategories);
-      
+
       // Fetch inventory summary
       const summary = await fetchInventorySummary();
       setInventorySummary(summary);
-      
+
       toast({
         title: "Data Loaded",
         description: `Loaded ${data.length} inventory items successfully.`,
@@ -132,9 +132,9 @@ const Inventory = () => {
   }, []);
 
   const filteredItems = inventoryItems.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          item.sku.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || 
+    const matchesCategory = selectedCategory === "all" ||
                            item.categories?.name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -157,23 +157,23 @@ const Inventory = () => {
     setEditingItem(item);
     setShowEditItemDialog(true);
   };
-  
+
   const handleDeleteItem = (id: string) => {
     setItemToDelete(id);
     setDeleteDialogOpen(true);
   };
-  
+
   const confirmDelete = async () => {
     if (!itemToDelete) return;
-    
+
     try {
       await deleteInventoryItem(itemToDelete);
-      
+
       toast({
         title: "Item Deleted",
         description: "Inventory item has been successfully deleted.",
       });
-      
+
       // Refresh data
       fetchData();
     } catch (error) {
@@ -184,7 +184,7 @@ const Inventory = () => {
         description: "Failed to delete inventory item. Please try again.",
       });
     }
-    
+
     setDeleteDialogOpen(false);
     setItemToDelete(null);
   };
@@ -193,21 +193,21 @@ const Inventory = () => {
     setShowAddItemDialog(false);
     setShowEditItemDialog(false);
     setEditingItem(null);
-    
+
     // Refresh data
     fetchData();
-    
+
     toast({
       title: editingItem ? "Item Updated" : "Item Added",
-      description: editingItem 
-        ? `Successfully updated ${editingItem.name}` 
+      description: editingItem
+        ? `Successfully updated ${editingItem.name}`
         : "New inventory item has been added successfully.",
     });
   };
-  
+
   const handleExport = () => {
     // Create CSV content
-    const headers = ["Name", "SKU", "Category", "Supplier", "Stock", "Price", "Status"];
+    const headers = ["Name", "SKU", "Category", "Supplier", "Stock", "Price (Per Item)", "Total Value", "Status"];
     const rows = filteredItems.map(item => [
       item.name,
       item.sku,
@@ -215,14 +215,15 @@ const Inventory = () => {
       item.suppliers?.name || "No Supplier",
       item.stock,
       `$${item.price.toFixed(2)}`,
+      `$${(item.price * item.stock).toFixed(2)}`,
       item.stock <= 0 ? "Out of Stock" : item.stock <= 10 ? "Low Stock" : "In Stock"
     ]);
-    
+
     const csvContent = [
       headers.join(","),
       ...rows.map(row => row.join(","))
     ].join("\n");
-    
+
     // Create download link
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -232,7 +233,7 @@ const Inventory = () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    
+
     toast({
       title: "Export Complete",
       description: "Inventory data has been exported to CSV.",
@@ -350,7 +351,13 @@ const Inventory = () => {
                       </TableHead>
                       <TableHead>
                         <div className="flex items-center">
-                          Price
+                          Price (Per Item)
+                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </div>
+                      </TableHead>
+                      <TableHead>
+                        <div className="flex items-center">
+                          Total Value
                           <ArrowUpDown className="ml-2 h-4 w-4" />
                         </div>
                       </TableHead>
@@ -368,6 +375,7 @@ const Inventory = () => {
                           <TableCell>{item.suppliers?.name || "No Supplier"}</TableCell>
                           <TableCell>{item.stock}</TableCell>
                           <TableCell>${item.price.toFixed(2)}</TableCell>
+                          <TableCell>${(item.price * item.stock).toFixed(2)}</TableCell>
                           <TableCell>{getStatusBadge(item.stock)}</TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -440,15 +448,15 @@ const Inventory = () => {
             <DialogTitle>Edit Inventory Item</DialogTitle>
           </DialogHeader>
           {editingItem && (
-            <AddItemForm 
-              onSuccess={handleFormSuccess} 
+            <AddItemForm
+              onSuccess={handleFormSuccess}
               editMode={true}
               itemData={editingItem}
             />
           )}
         </DialogContent>
       </Dialog>
-      
+
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

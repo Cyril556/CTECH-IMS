@@ -45,10 +45,10 @@ const Suppliers = () => {
       try {
         const suppliersData = await fetchSuppliers();
         setSuppliers(suppliersData);
-        
+
         const productsData = await fetchSupplierProducts();
         setSupplierProducts(productsData);
-        
+
         toast({
           title: "Data Loaded",
           description: `Loaded ${suppliersData.length} suppliers successfully.`,
@@ -79,13 +79,13 @@ const Suppliers = () => {
   const paginatedSuppliers = filteredSuppliers.slice(startIndex, startIndex + itemsPerPage);
 
   const handleStatusChange = (supplierId: string, newStatus: string) => {
-    setSuppliers(suppliers.map(supplier => 
-      supplier.id === supplierId 
-        ? { ...supplier, status: newStatus } 
+    setSuppliers(suppliers.map(supplier =>
+      supplier.id === supplierId
+        ? { ...supplier, status: newStatus }
         : supplier
     ));
   };
-  
+
   const handleViewProducts = (supplier: Supplier) => {
     setSelectedSupplier(supplier);
     setShowProductsDialog(true);
@@ -93,9 +93,9 @@ const Suppliers = () => {
 
   return (
     <div className="space-y-6">
-      <SupplierStats 
-        suppliers={suppliers} 
-        supplierProducts={supplierProducts} 
+      <SupplierStats
+        suppliers={suppliers}
+        supplierProducts={supplierProducts}
       />
 
       <Card>
@@ -138,6 +138,13 @@ const Suppliers = () => {
                 supplierProducts={supplierProducts}
                 onStatusChange={handleStatusChange}
                 onSupplierClick={handleViewProducts}
+                onDeleteSuccess={() => {
+                  fetchSuppliers().then(data => setSuppliers(data));
+                  toast({
+                    title: "Supplier Deleted",
+                    description: "The supplier has been removed successfully."
+                  });
+                }}
               />
 
               <div className="flex items-center justify-between mt-4">
@@ -176,11 +183,11 @@ const Suppliers = () => {
               Fill in the form below to add a new supplier to your inventory management system.
             </DialogDescription>
           </DialogHeader>
-          <AddSupplierForm 
+          <AddSupplierForm
             onSuccess={() => {
               setShowAddSupplierDialog(false);
               fetchSuppliers().then(data => setSuppliers(data));
-            }} 
+            }}
           />
         </DialogContent>
       </Dialog>
