@@ -11,21 +11,31 @@ import Orders from "./pages/Orders";
 import Suppliers from "./pages/Suppliers";
 import SupplierCatalog from "./components/suppliers/SupplierCatalog";
 import Reports from "./pages/Reports";
+import UserManagement from "./pages/UserManagement";
+import AuditLog from "./pages/AuditLog";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import { isAuthenticated, isAdmin } from "./lib/auth";
 
 const queryClient = new QueryClient();
-
-// Simple auth check function
-const isAuthenticated = () => {
-  const user = localStorage.getItem("user");
-  return user && JSON.parse(user).isLoggedIn;
-};
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Admin-only route component
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdmin()) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -67,6 +77,16 @@ const App = () => {
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="suppliers/:supplierId" element={<SupplierCatalog />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="user-management" element={
+              <AdminRoute>
+                <UserManagement />
+              </AdminRoute>
+            } />
+            <Route path="audit-log" element={
+              <AdminRoute>
+                <AuditLog />
+              </AdminRoute>
+            } />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

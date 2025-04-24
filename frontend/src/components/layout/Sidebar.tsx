@@ -7,7 +7,10 @@ import {
   Users,
   BarChart3,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  UserCog,
+  FileText,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -16,6 +19,8 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
+import { isAdmin } from "@/lib/auth";
+import { Badge } from "@/components/ui/badge";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -24,14 +29,27 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
   const location = useLocation();
+  const userIsAdmin = isAdmin();
 
-  const navItems = [
+  // Regular navigation items for all users
+  const regularNavItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/" },
     { name: "Inventory", icon: Package, path: "/inventory" },
     { name: "Orders", icon: ShoppingCart, path: "/orders" },
     { name: "Suppliers", icon: Users, path: "/suppliers" },
     { name: "Reports", icon: BarChart3, path: "/reports" },
   ];
+
+  // Admin-only navigation items
+  const adminNavItems = [
+    { name: "User Management", icon: UserCog, path: "/user-management", adminOnly: true },
+    { name: "Audit Log", icon: FileText, path: "/audit-log", adminOnly: true },
+  ];
+
+  // Combine regular and admin items based on user role
+  const navItems = userIsAdmin
+    ? [...regularNavItems, ...adminNavItems]
+    : regularNavItems;
 
   return (
     <div
@@ -77,7 +95,15 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
                   )}
                 >
                   <item.icon size={20} className="flex-shrink-0" />
-                  <span className="ml-3 font-medium">{item.name}</span>
+                  <div className="ml-3 flex items-center gap-2">
+                    <span className="font-medium">{item.name}</span>
+                    {item.adminOnly && (
+                      <Badge variant="destructive" className="px-1 py-0 h-4 text-[10px]">
+                        <Shield className="h-2 w-2 mr-0.5" />
+                        Admin
+                      </Badge>
+                    )}
+                  </div>
                 </Link>
               ) : (
                 <TooltipProvider>

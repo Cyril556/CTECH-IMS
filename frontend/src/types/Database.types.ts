@@ -10,6 +10,70 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      users: {
+        Row: {
+          id: string
+          email: string
+          password: string
+          full_name: string | null
+          role: string
+          status: string
+          password_reset_required: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          password: string
+          full_name?: string | null
+          role?: string
+          status?: string
+          password_reset_required?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          password?: string
+          full_name?: string | null
+          role?: string
+          status?: string
+          password_reset_required?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      audit_logs: {
+        Row: {
+          id: string
+          event_type: string
+          user_id: string | null
+          target_user_id: string | null
+          details: Json | null
+          ip_address: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_type: string
+          user_id?: string | null
+          target_user_id?: string | null
+          details?: Json | null
+          ip_address?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_type?: string
+          user_id?: string | null
+          target_user_id?: string | null
+          details?: Json | null
+          ip_address?: string | null
+          created_at?: string
+        }
+      }
       categories: {
         Row: {
           id: string

@@ -1,18 +1,23 @@
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { 
-  Bell, 
-  User, 
-  CheckCircle, 
-  AlarmClock, 
-  Package, 
+import {
+  Bell,
+  User,
+  CheckCircle,
+  AlarmClock,
+  Package,
   ShoppingCart,
   LogOut,
-  Search
+  Search,
+  Shield,
+  FileText,
+  Settings,
+  UserCog
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { isAdmin, logout } from "@/lib/auth";
 
 interface TopNavProps {
   toggleSidebar: () => void;
@@ -74,7 +80,7 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const moduleName = getModuleName(location.pathname);
-  
+
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -107,10 +113,10 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
       updatedNotifications[index].read = true;
       setNotifications(updatedNotifications);
       localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
-      
+
       window.dispatchEvent(new Event("notificationsUpdated"));
     }
-    
+
     navigate(notification.action);
   };
 
@@ -121,47 +127,57 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
     }));
     setNotifications(updatedNotifications);
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
-    
+
     window.dispatchEvent(new Event("notificationsUpdated"));
-    
+
     toast("All notifications marked as read");
   };
 
-  const handleLogout = () => {
-    const newNotification = {
-      id: Date.now(),
-      title: "Logged Out",
-      message: "You have been logged out successfully",
-      time: new Date().toLocaleString(),
-      read: false,
-      icon: "User",
-      action: "/login"
-    };
-    
-    const updatedNotifications = [newNotification, ...notifications];
-    localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
-    
-    localStorage.removeItem("user");
-    
-    toast("Logged out successfully");
-    
-    navigate("/login");
-  };
-
-  const getUserEmail = () => {
+  const handleLogout = async () => {
     try {
-      const user = localStorage.getItem("user");
-      if (user) {
-        return JSON.parse(user).email;
-      }
-      return "user@ctech.com";
+      // Add logout notification
+      const newNotification = {
+        id: Date.now(),
+        title: "Logged Out",
+        message: "You have been logged out successfully",
+        time: new Date().toLocaleString(),
+        read: false,
+        icon: "User",
+        action: "/login"
+      };
+
+      const updatedNotifications = [newNotification, ...notifications];
+      localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+
+      // Use the auth service to log out
+      await logout();
+
+      toast("Logged out successfully");
+
+      navigate("/login");
     } catch (error) {
-      return "user@ctech.com";
+      console.error("Error logging out:", error);
+      toast("Error logging out. Please try again.");
     }
   };
 
-  const userEmail = getUserEmail();
+  const getUser = () => {
+    try {
+      const userJson = localStorage.getItem("user");
+      if (userJson) {
+        return JSON.parse(userJson);
+      }
+      return { email: "user@ctech.com", role: "staff" };
+    } catch (error) {
+      return { email: "user@ctech.com", role: "staff" };
+    }
+  };
+
+  const user = getUser();
+  const userEmail = user.email;
+  const userRole = user.role;
   const userInitials = userEmail.substring(0, 2).toUpperCase();
+  const isUserAdmin = isAdmin();
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-20 shadow-sm">
@@ -177,9 +193,9 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
 
         <div className="hidden md:flex items-center relative max-w-md w-full mx-8">
           <Search className="absolute left-3 h-4 w-4 text-gray-400" />
-          <Input 
-            type="search" 
-            placeholder="Search..." 
+          <Input
+            type="search"
+            placeholder="Search..."
             className="pl-10 pr-4 h-9 border-gray-200 focus:border-c-tech-red focus:ring-c-tech-red/10"
           />
         </div>
@@ -187,9 +203,9 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="relative rounded-full w-9 h-9 hover:bg-gray-100"
               >
                 <Bell className="h-5 w-5 text-gray-600" />
@@ -246,7 +262,7 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
               {notifications.length > 0 && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="flex justify-center text-sm text-c-tech-red font-medium py-2"
                     onClick={() => navigate("/notifications")}
                   >
@@ -272,7 +288,15 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col">
-                  <span className="font-medium">My Account</span>
+                  <div className="flex items-center">
+                    <span className="font-medium">My Account</span>
+                    {isUserAdmin && (
+                      <Badge variant="destructive" className="ml-2 px-1.5 py-0 h-5">
+                        <Shield className="h-3 w-3 mr-1" />
+                        Admin
+                      </Badge>
+                    )}
+                  </div>
                   <span className="text-xs text-muted-foreground mt-1">{userEmail}</span>
                 </div>
               </DropdownMenuLabel>
@@ -285,6 +309,24 @@ const TopNav = ({ toggleSidebar }: TopNavProps) => {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
+
+              {isUserAdmin && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                    Admin Controls
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate("/user-management")} className="cursor-pointer">
+                    <UserCog className="mr-2 h-4 w-4" />
+                    <span>User Management</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/audit-log")} className="cursor-pointer">
+                    <FileText className="mr-2 h-4 w-4" />
+                    <span>Audit Log</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-c-tech-red cursor-pointer">
                 <LogOut className="h-4 w-4 mr-2" />
