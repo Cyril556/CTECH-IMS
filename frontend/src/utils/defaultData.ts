@@ -30,10 +30,42 @@ export const defaultNotifications = [
   }
 ];
 
+// Default users for demo
+export const defaultUsers = [
+  {
+    id: "1",
+    email: "admin@ctech.com",
+    password: "admin123",
+    full_name: "Admin User",
+    role: "admin",
+    status: "active",
+    password_reset_required: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: "2",
+    email: "demo@ctech.com",
+    password: "demo123",
+    full_name: "Demo User",
+    role: "staff",
+    status: "active",
+    password_reset_required: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
+
 // Initialize default data for new users
 export const initializeDefaultData = () => {
   // Check if notifications already exist
   if (!localStorage.getItem("notifications")) {
     localStorage.setItem("notifications", JSON.stringify(defaultNotifications));
+  }
+
+  // Mock the users table in localStorage for demo purposes
+  // In a real app, this would be in a database
+  if (!localStorage.getItem("mock_users_table")) {
+    localStorage.setItem("mock_users_table", JSON.stringify(defaultUsers));
   }
 };
