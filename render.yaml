@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ctech-ims-api
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: https://ctech-ims.vercel.app
+      - key: DATABASE_URL
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true

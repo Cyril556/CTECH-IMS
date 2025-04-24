@@ -1,7 +1,7 @@
 // Configuration file for the application
 
 // API URL - Replace with your actual Render backend URL
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const API_URL = import.meta.env.VITE_API_URL || 'https://ctech-ims-api.onrender.com';
 
 // Supabase configuration
 export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://txphvpzcbamricsskvoe.supabase.co';
